@@ -1,0 +1,15 @@
+package com.sentinelvault.repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.sentinelvault.entity.AuditLog;
+
+@Repository
+public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
+
+    List<AuditLog> findByUserEmailOrderByActionTimeDesc(String userEmail);
+
+}
