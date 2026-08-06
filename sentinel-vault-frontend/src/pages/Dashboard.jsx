@@ -26,6 +26,7 @@ function Dashboard() {
             navigate("/login");
 
             return;
+
         }
 
         try {
@@ -74,6 +75,86 @@ function Dashboard() {
         } catch (error) {
 
             alert("Delete failed");
+
+        }
+
+    };
+
+    // ==========================
+    // Preview File
+    // ==========================
+
+    const previewFile = async (id) => {
+
+        try {
+
+            const response = await API.get(
+
+                `/files/preview/${id}`,
+
+                {
+
+                    responseType: "blob"
+
+                }
+
+            );
+
+            const url = window.URL.createObjectURL(response.data);
+
+            window.open(url, "_blank");
+
+        } catch (error) {
+
+            console.log(error);
+
+            alert("Preview failed");
+
+        }
+
+    };
+
+    // ==========================
+    // Download File
+    // ==========================
+
+    const downloadFile = async (id, fileName) => {
+
+        try {
+
+            const response = await API.get(
+
+                `/files/download/${id}`,
+
+                {
+
+                    responseType: "blob"
+
+                }
+
+            );
+
+            const url = window.URL.createObjectURL(response.data);
+
+            const link = document.createElement("a");
+
+            link.href = url;
+
+            link.download = fileName;
+
+            document.body.appendChild(link);
+
+            link.click();
+
+            document.body.removeChild(link);
+
+            window.URL.revokeObjectURL(url);
+
+        } catch (error) {
+
+            console.log(error);
+
+            alert("Download failed");
 
         }
 
@@ -140,9 +221,7 @@ function Dashboard() {
 
                 <div className="navbar">
 
-                    <h1>
-                        Welcome {username}
-                    </h1>
+                    <h1>Welcome {username}</h1>
 
                 </div>
 
@@ -183,7 +262,9 @@ function Dashboard() {
                 </div>
 
                 <h2 style={{ marginTop: "30px" }}>
+
                     My Files
+
                 </h2>
 
                 <table className="file-table">
@@ -210,87 +291,84 @@ function Dashboard() {
 
                             files.length === 0 ?
 
-                            (
+                                (
 
-                                <tr>
+                                    <tr>
 
-                                    <td colSpan="4">
+                                        <td colSpan="4">
 
-                                        No files uploaded
+                                            No files uploaded
 
-                                    </td>
+                                        </td>
 
-                                </tr>
+                                    </tr>
 
-                            )
+                                )
 
-                            :
+                                :
 
-                            files.map((file) => (
+                                files.map((file) => (
 
-                                <tr key={file.id}>
+                                    <tr key={file.id}>
 
-                                    <td>{file.fileName}</td>
+                                        <td>{file.fileName}</td>
 
-                                    <td>{file.fileType}</td>
+                                        <td>{file.fileType}</td>
 
-                                    <td>{file.uploadDate}</td>
+                                        <td>{file.uploadDate}</td>
 
-                                    <td>
+                                        <td>
 
-                                        <button
-                                            className="primary-btn"
-                                            onClick={() =>
-                                                window.open(
-                                                    `http://localhost:8082/files/preview/${file.id}`,
-                                                    "_blank"
-                                                )
-                                            }
-                                        >
-                                            Preview
-                                        </button>
+                                            <button
+                                                className="primary-btn"
+                                                onClick={() =>
+                                                    previewFile(file.id)
+                                                }
+                                            >
+                                                Preview
+                                            </button>
 
-                                        {" "}
+                                            {" "}
 
-                                        <button
-                                            className="primary-btn"
-                                            onClick={() =>
-                                                window.open(
-                                                    `http://localhost:8082/files/download/${file.id}`,
-                                                    "_blank"
-                                                )
-                                            }
-                                        >
-                                            Download
-                                        </button>
+                                            <button
+                                                className="primary-btn"
+                                                onClick={() =>
+                                                    downloadFile(
+                                                        file.id,
+                                                        file.fileName
+                                                    )
+                                                }
+                                            >
+                                                Download
+                                            </button>
 
-                                        {" "}
+                                            {" "}
 
-                                        <button
-                                            className="primary-btn"
-                                            onClick={() =>
-                                                navigate(`/share/${file.id}`)
-                                            }
-                                        >
-                                            Share
-                                        </button>
+                                            <button
+                                                className="primary-btn"
+                                                onClick={() =>
+                                                    navigate(`/share/${file.id}`)
+                                                }
+                                            >
+                                                Share
+                                            </button>
 
-                                        {" "}
+                                            {" "}
 
-                                        <button
-                                            className="logout-btn"
-                                            onClick={() =>
-                                                deleteFile(file.id)
-                                            }
-                                        >
-                                            Delete
-                                        </button>
+                                            <button
+                                                className="logout-btn"
+                                                onClick={() =>
+                                                    deleteFile(file.id)
+                                                }
+                                            >
+                                                Delete
+                                            </button>
 
-                                    </td>
+                                        </td>
 
-                                </tr>
+                                    </tr>
 
-                            ))
+                                ))
 
                         }
 
